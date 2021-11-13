@@ -37,7 +37,9 @@ class DPLL:
                 self.original_dict[str(element)[1:]] = 0
         
         # copy original dict to work with it as value dict from now on; leave original dict
-        self.value_dict = self.original_dict.copy()
+        #self.value_dict = self.original_dict.copy()
+
+        # maybe merge cnfs??
 
 
     # check for tautologies one time in the beginning         
