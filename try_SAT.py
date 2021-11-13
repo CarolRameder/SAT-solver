@@ -42,9 +42,8 @@ class DPLL:
 
     # check for tautologies one time in the beginning         
     def tautology(self):
-        l = self.clause_list.copy()
         # loop through clauses
-        for clause in reversed(l):
+        for clause in reversed(self.clause_list):
             # set taut to false in order to remonve clause if there is a tautology
             taut = False
             for number in clause:
@@ -53,15 +52,15 @@ class DPLL:
                     if -number == clause[i]:
                         taut  = True    
             if taut == True:
-                l.remove(clause)
-        return l
+                self.clause_list.remove(clause)
+        # return a list of clauses where the tautoloy clauses are removed
+    
 
-    # check for pure literals
+    # check for pure literals => atm no return becuase I implememted a self dict; could return a dict with the updated values => then ready to do unit testing again, etc.
     def pure_literal(self):
-        l = self.clause_list.copy()
         # set default dic to have all literals saved as keys
         literal_count = defaultdict(int)
-        for clause in l:
+        for clause in self.clause_list:
             for number in clause:
                 literal_count[number] += 1
         
@@ -72,6 +71,7 @@ class DPLL:
                     self.value_dict[str(key)] = 1
                 elif key < 0:
                     self.value_dict[str(key)] = 0
+        
 
     #based on the first dictionary, loop through clauses again to find unit_clauses and delete then the clauses with one True literal and delete False literals
     def unit_clauses(self):
