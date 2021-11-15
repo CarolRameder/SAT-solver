@@ -3,9 +3,10 @@ class DPLL:
     def __init__(self, clause_list, num_list):
         self.clause_list = clause_list
         self.num_list = num_list
+        self.truth_values={}
 
     # set first dictionary based on the list containing the numbers of the sudoku
-    def set_dict(self):
+    def set_dict0(self):
 
         for clause in self.clause_list:
             if len(self.clause_list) == 0:
@@ -25,7 +26,7 @@ class DPLL:
         return value_dict
 
     # based on the first dictionary, loop through clauses again to find unit_clauses and delete then the clauses with one True literal and delete False literals
-    def unit_clauses(self, dictionary):
+    def unit_clauses0(self, dictionary):
         new_list = self.clause_list.copy()
 
         # look if there are unit clauses in clause list
@@ -48,5 +49,26 @@ class DPLL:
 
         return new_list
 
-    def test(self):
-        print(self.num_list)
+    def set_dict(self):
+
+        for num in self.num_list:
+            self.truth_values[num]=1
+        #print(self.truth_values)
+
+    def simplify(self):
+        for clause in self.clause_list:
+            for num in clause:
+                if self.truth_values[num]==1 or self.truth_values[-num]==0:
+                    self.clause_list.remove(clause)
+                    break
+                elif self.truth_values[num]==0 or self.truth_values[-num]==1:
+                    clause.remove(num)
+            if len(clause)==0:
+                print("unsatisfiable?")
+        if len(self.clause_list)==0:
+            print("solution found?")
+
+
+    def run(self):
+        self.set_dict()
+        self.simplify()
