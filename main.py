@@ -50,7 +50,7 @@ if __name__ == '__main__':
     rules = read_rules()
     rules = parse_rules(rules)
     start_time = time.time()
-    alg = DPLL(rules,sudoku)
+    alg = DPLL(rules,sudoku,DIM)
     alg.run()
     #print("--- %s seconds ---" % (time.time() - start_time))
 
