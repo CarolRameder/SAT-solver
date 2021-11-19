@@ -1,5 +1,6 @@
 import time
 import sys, getopt
+import numpy as np
 from DPLL import DPLL
 # sys.setrecursionlimit(100000)
 import time
@@ -47,44 +48,55 @@ def parse_rules(arg):
         list_rep.append(curent_list)
     return list_rep
 
+def show(solution):
+    sudoku = np.zeros((9, 9), dtype=int)
+    for num in solution:
+        if num>0:
+            lin = int(str(num)[0]) - 1
+            col = int(str(num)[1]) - 1
+            val = int(str(num)[2])
+            sudoku[lin][col] = val
+    print(sudoku)
 #first unassigned available
 def select_literal(cnf):
     for c in cnf:
         for literal in c:
-            return literal[0]
+            return literal
 
 def simplify(clauses, lit):
-    for clause in reversed(clauses):
-        for num in clause:
+    new_clauses=clauses.copy()
+    for clause in reversed(new_clauses):
+        for num in reversed(clause):
             if num==lit:
-                clauses.remove(clause)
+                #print(lit)
+                new_clauses.remove(clause)
                 break
             elif num==-lit:
                 clause.remove(num)
-        if len(clause) == 0:
-            #print("empty list0")
-            return 0
-    if len(clauses) == 0:
+                if len(clause) == 0:
+                    return 0
+    if len(new_clauses) == 0:
         print("Solution found")
         return 1
-    return clauses
+    return new_clauses
 
 
 def rec(clauses, lit, sol):
     # add argument to simplify
-    sol.append(lit)
-    result = simplify(clauses, lit)
-    if result == 0:
+    new_sol = sol.copy()
+    new_sol.append(lit)
+    new_clauses = simplify(clauses, lit)
+    if new_clauses == 0:
         return 0
-    elif result == 1:
+    elif new_clauses == 1:
+        show(sol)
         return 1
 
-    new_lit = select_literal(result)
+    new_lit = select_literal(new_clauses)
 
-
-
-#   if (dpll_2(α,  not P))return true;
-#   return dpll_2(α, P);
+    if rec(new_clauses, -new_lit, new_sol):
+        return True
+    return rec(new_clauses, new_lit, new_sol)
 
 
 if __name__ == '__main__':
@@ -98,9 +110,13 @@ if __name__ == '__main__':
     rules = read_rules()  # DIMACS format
     rules = parse_rules(rules)  # int
     #start_time = time.time()
-    clauses=[]
-    for field in sudoku:
-        clauses=simplify(rules,field)
-    new_lit=select_literal(clauses)
 
-    rec(clauses, new_lit)
+    for field in sudoku:
+        rules=simplify(rules,field)
+
+    new_lit=select_literal(rules)
+    #print(simplify(rules,-111))
+    #show(sudoku)
+    if not rec(rules, new_lit, sudoku):
+        print(rec(rules, -new_lit, sudoku))
+
