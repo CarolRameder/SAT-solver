@@ -2,7 +2,6 @@ import time
 import sys, getopt
 import numpy as np
 import copy
-#from DPLL import DPLL
 # sys.setrecursionlimit(100000)
 import time
 
@@ -59,6 +58,7 @@ def show(solution):
             val = int(str(num)[2])
             sudoku[lin][col] = val
     print(sudoku)
+
 #first unassigned available
 def select_literal(cnf):
     for c in cnf:
@@ -81,9 +81,13 @@ def simplify(clauses, lit):
         return 1
     return simplified
 
+def unit(clauses):
+    for clause in clauses:
+        if len(clause)==1:
+            return clause[0]
+    return 0
 
 def rec(clauses, lit, sol):
-    # add argument to simplify
     new_sol = copy.deepcopy(sol)
     new_sol.append(lit)
     new_clauses = simplify(clauses, lit)
@@ -93,7 +97,12 @@ def rec(clauses, lit, sol):
         show(new_sol)
         return 1
 
-    new_lit = select_literal(new_clauses)
+    #unit rule
+    unit_clause=unit(new_clauses)
+    if unit_clause!=0:
+        new_lit=unit_clause
+    else:
+        new_lit = select_literal(new_clauses)
 
     if rec(new_clauses, -new_lit, new_sol):
         return True
@@ -116,3 +125,5 @@ if __name__ == '__main__':
     first_lit=select_literal(rules)
     if not rec(rules, first_lit, sudoku):
         print(rec(rules, -first_lit, sudoku))
+
+    #print("--- %s seconds ---" % (time.time() - start_time))
