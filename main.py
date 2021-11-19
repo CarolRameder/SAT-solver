@@ -1,14 +1,16 @@
 import time
 import sys, getopt
 import numpy as np
-from DPLL import DPLL
+import copy
+#from DPLL import DPLL
 # sys.setrecursionlimit(100000)
 import time
 
-DIM = 9
-sudokus = "1000_sudokus.txt"  # argument
-rules = "9x9_sudoku-rules.txt"  # hardcode read
-
+DIM = 9 #determined when reading the parameter
+#sudokus = "4x4.txt"  # argument
+sudokus = "1000_sudokus.txt"
+#rules = "sudoku-rules-4x4.txt"  # hardcode read
+rules= "9x9_sudoku-rules.txt"
 
 # returns DIMACS representation of the given input - initial configuration
 # will be argument on run
@@ -49,7 +51,7 @@ def parse_rules(arg):
     return list_rep
 
 def show(solution):
-    sudoku = np.zeros((9, 9), dtype=int)
+    sudoku = np.zeros((DIM, DIM), dtype=int)
     for num in solution:
         if num>0:
             lin = int(str(num)[0]) - 1
@@ -64,32 +66,31 @@ def select_literal(cnf):
             return literal
 
 def simplify(clauses, lit):
-    new_clauses=clauses.copy()
-    for clause in reversed(new_clauses):
+    simplified=copy.deepcopy(clauses)
+    for clause in reversed(simplified):
         for num in reversed(clause):
             if num==lit:
-                #print(lit)
-                new_clauses.remove(clause)
+                simplified.remove(clause)
                 break
             elif num==-lit:
                 clause.remove(num)
                 if len(clause) == 0:
                     return 0
-    if len(new_clauses) == 0:
+    if len(simplified) == 0:
         print("Solution found")
         return 1
-    return new_clauses
+    return simplified
 
 
 def rec(clauses, lit, sol):
     # add argument to simplify
-    new_sol = sol.copy()
+    new_sol = copy.deepcopy(sol)
     new_sol.append(lit)
     new_clauses = simplify(clauses, lit)
     if new_clauses == 0:
         return 0
     elif new_clauses == 1:
-        show(sol)
+        show(new_sol)
         return 1
 
     new_lit = select_literal(new_clauses)
@@ -110,13 +111,8 @@ if __name__ == '__main__':
     rules = read_rules()  # DIMACS format
     rules = parse_rules(rules)  # int
     #start_time = time.time()
-
     for field in sudoku:
         rules=simplify(rules,field)
-
-    new_lit=select_literal(rules)
-    #print(simplify(rules,-111))
-    #show(sudoku)
-    if not rec(rules, new_lit, sudoku):
-        print(rec(rules, -new_lit, sudoku))
-
+    first_lit=select_literal(rules)
+    if not rec(rules, first_lit, sudoku):
+        print(rec(rules, -first_lit, sudoku))
