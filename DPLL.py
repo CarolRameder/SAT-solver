@@ -9,12 +9,11 @@ class DPLL:
         self.num_list = num_list
         self.truth_values = {}
         self.dim = dim
-        self.heur_num=heur_num
+        self.heur_num = heur_num
 
     def set_dict(self):
         for num in self.num_list:
             self.truth_values[num] = 1
-
 
     def show(self):
         sudoku = np.zeros((9, 9), dtype=int)
@@ -64,9 +63,9 @@ class DPLL:
     # simplifies
     def bkt(self, lit, truth_val):
 
-        current_state = self.clause_list.copy(), self.truth_values.copy() #save state
+        current_state = self.clause_list.copy(), self.truth_values.copy()  # save state
         print("bkt call")
-        self.truth_values[lit] = truth_val #update new added value
+        self.truth_values[lit] = truth_val  # update new added value
         result = self.simplify()
         if result == 0:
             return 0
@@ -97,9 +96,22 @@ class DPLL:
             self.clause_list, self.truth_values = current_state
             return self.bkt(lit, 1 - truth_val)
 
+    def rec(self, lit):
+        # add argument to simplify
+        result = self.simplify()
+        if result == 0:
+            return 0
+        elif result == 1:
+            return 1
+
+        lit, tv = self.rand_heuristic()
+
+    #       if (dpll_2(α,  not P))return true;
+    #       return dpll_2(α, P);
+
     def run(self):
         self.set_dict()
         # self.delete_tautologies()
-        self.simplify()  #it will not return anything for the first step
+        self.simplify()  # it will not return anything for the first step
         lit, truth_val = self.rand_heuristic()
-        #print(self.bkt(lit, truth_val))
+        # print(self.bkt(lit, truth_val))
