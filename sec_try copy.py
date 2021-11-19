@@ -128,10 +128,11 @@ def random_variable(clause_list):
 
 
 # call dpll
-index = 0
 def dpll(clause_list, literal):
     global values
     global index
+    global value_dict
+
     print(f"Index: {index}")
     index += 1
 
@@ -140,6 +141,7 @@ def dpll(clause_list, literal):
 
     if len(clause_list) == 0:
         values.append(literal)
+        value_dict[literal] = True
         return True
     
     for clause in clause_list:
@@ -149,40 +151,11 @@ def dpll(clause_list, literal):
     literal = random_variable(clause_list)
     if dpll(copy.deepcopy(clause_list), -literal):
         values.append(-literal)
+        print(-literal)
+        value_dict[literal] = True
         return True
     
-    values.append(literal)
     return dpll(copy.deepcopy(clause_list), literal)
-
-
-
-sud_1000 = read_soduko("1000_sudokus.txt")
-sud_4 = read_soduko("4x4.txt")
-try_sud_4 = sud_4[0]
-sud_9 = read_soduko("sudoku-example.txt")
-value_dict = {}
-
-rules_file, input_file = prepare_set("sudoku-rules-4x4.txt", "sudoku-example.txt")
-
-var = random_variable(rules_file)
-values = []
-dpll(rules_file, var)
-
-print(sorted(values))
-len(values)
-
-# remove clauses
-
-for lit in try_sud_4:
-    rem_clauses(rules_file, lit)
-
-
-# remove literal
-
-for lit in try_sud_4:
-    rem_lit(rules_file, -lit)
-
-
 
 def main(rules, input):
     #tautology (rules)
@@ -196,7 +169,20 @@ def main(rules, input):
 
     var = random_variable(rules)
 
-    values= []
     return dpll(rules, var), values
+
+
+
+sud_1000 = read_soduko("1000_sudokus.txt")
+sud_4 = read_soduko("4x4.txt")
+try_sud_4 = sud_4[1]
+sud_9 = read_soduko("sudoku-example.txt")
+value_dict = {}
+
+rules_file, input_file = prepare_set("sudoku-rules-4x4.txt", "sudoku-example.txt")
+var = random_variable(rules_file)
+values = []
+index = 0
+
 
 main(rules_file, try_sud_4)
