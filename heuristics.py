@@ -1,41 +1,32 @@
-from functools import lru_cache
-from typing import DefaultDict
-import pycosat
-import sys, getopt
-import time
 from collections import defaultdict
+import copy
 
+# algorithms state to assign either true or fals value, I return the "normal" vs. negated version
 
-def DLCS(lst, value_dict):
+def DLCS(lst):
+    clauses = copy.deepcopy(lst)
     literal_count = defaultdict(int)
-    for clause in lst:
+    literal_count2 = defaultdict(int)
+    for clause in clauses:
         for number in clause:
             literal_count[abs(number)] += 1
+            literal_count2[number] += 1
     max_key = max(literal_count, key=literal_count.get)
     
-    counter_t = 0
-    counter_n = 0
-
-    for clause in lst:
-        for number in clause:
-            if number == max_key:
-                counter_t += 1
-            elif number == -max_key:
-                counter_n += 1
-    
-    if counter_t > counter_n:
-        value_dict[str(max_key)] = 1
+    if max_key and -max_key in literal_count2:
+        if literal_count2[max_key] > literal_count2[-max_key]:
+            return max_key
+        else:
+            return -max_key
     else:
-        value_dict[str(max_key)] = 0
+        return max_key
 
-
-
-
-def DLIS(lst, value_dict, key_max = True):
-    # 2 dictionaries => one for positive and one for negative literals
+# we can choose if we take the highest positive or negative value => can decide with True
+def DLIS(lst, key_max = True):
+    clauses = copy.deepcopy(lst)
     pos_literal_count = defaultdict(int)
     neg_literal_count = defaultdict(int)
-    for clause in lst:
+    for clause in clauses:
         for number in clause:
             if number > 0:
                 pos_literal_count[number] += 1
@@ -46,45 +37,25 @@ def DLIS(lst, value_dict, key_max = True):
     max_key = max(pos_literal_count, key=pos_literal_count.get)
     min_key = max(neg_literal_count, key=neg_literal_count.get)
 
-    # if you want to have largest positive literal
     if key_max == True:
-        counter_t = 0
-        counter_n = 0
-
-        for clause in lst:
-            for number in clause:
-                if number == max_key:
-                    counter_t += 1
-                elif number == -max_key:
-                    counter_n += 1
-        # if more pos versions of literal than neg assign T else F
-        if counter_t > counter_n:
-            value_dict[str(max_key)] = 1
+        if max_key in pos_literal_count and -max_key in neg_literal_count:
+            if pos_literal_count[max_key] > neg_literal_count[-max_key]:
+                return max_key
+            else:
+                return -max_key
         else:
-            value_dict[str(max_key)] = 0
-
-    # if higest amount of neg literals should be chosen
+            return max_key
+    
     else:
-        counter_t = 0
-        counter_n = 0
-
-        for clause in lst:
-            for number in clause:
-                if number == min_key:
-                    counter_n += 1
-                elif number == -min_key:
-                    counter_t += 1
-        # if more pos versions of literal than neg assign T else F
-        if counter_t > counter_n:
-            value_dict[str(max_key)] = 1
+        if min_key in neg_literal_count and -min_key in pos_literal_count:
+            if neg_literal_count[min_key] > pos_literal_count[-min_key]:
+                return min_key
+            else:
+                return -min_key
         else:
-            value_dict[str(max_key)] = 0
-    return value_dict
+            return min_key
+
+    
         
 
 
-
-l2 = [[111,333,111,-113,-114], [222,222,222,222,222,222,333,444,113, -333, -333, -333]]
-d = {}
-
-DLIS(l2, d)
