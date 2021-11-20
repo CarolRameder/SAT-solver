@@ -5,7 +5,7 @@ import time
 import math
 sys.setrecursionlimit(10000)
 #sudokus = "4x4.txt"  # argument in line
-sudokus = "16x16.txt"
+sudokus = "1000_sudokus.txt"
 #sudokus = "1000_sudokus.txt"
 rules_d={
     4:"sudoku-rules-4x4.txt",
