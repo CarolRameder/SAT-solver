@@ -2,18 +2,32 @@ import time
 import sys, getopt
 import numpy as np
 import copy
-# sys.setrecursionlimit(100000)
 import time
 
-DIM = 9 #determined when reading the parameter
-#sudokus = "4x4.txt"  # argument
+#sudokus = "4x4.txt"  # argument in line
 sudokus = "1000_sudokus.txt"
 #rules = "sudoku-rules-4x4.txt"  # hardcode read
 rules= "9x9_sudoku-rules.txt"
 
+
+def set_dim(val):
+    global DIM
+    DIM=val
+
+#first unassigned available
+def select_literal(cnf):
+    for c in cnf:
+        for literal in c:
+            return literal
+
+heuristics={
+    1:select_literal
+}
+
 # returns DIMACS representation of the given input - initial configuration
-# will be argument on run
+# file as argument on run
 def read_game():
+    #f = open(file, "r") received arg later
     f = open(sudokus, "r")
     game_rep = f.readline()
     game_final = ""
@@ -50,20 +64,14 @@ def parse_rules(arg):
     return list_rep
 
 def show(solution):
-    sudoku = np.zeros((DIM, DIM), dtype=int)
+    solved = np.zeros((DIM, DIM), dtype=int)
     for num in solution:
         if num>0:
             lin = int(str(num)[0]) - 1
             col = int(str(num)[1]) - 1
             val = int(str(num)[2])
-            sudoku[lin][col] = val
-    print(sudoku)
-
-#first unassigned available
-def select_literal(cnf):
-    for c in cnf:
-        for literal in c:
-            return literal
+            solved[lin][col] = val
+    print(solved)
 
 def simplify(clauses, lit):
     simplified=copy.deepcopy(clauses)
@@ -77,7 +85,6 @@ def simplify(clauses, lit):
                 if len(clause) == 0:
                     return 0
     if len(simplified) == 0:
-        print("Solution found")
         return 1
     return simplified
 
@@ -102,7 +109,7 @@ def rec(clauses, lit, sol):
     if unit_clause!=0:
         new_lit=unit_clause
     else:
-        new_lit = select_literal(new_clauses)
+        new_lit = heuristics[h](new_clauses)
 
     if rec(new_clauses, -new_lit, new_sol):
         return True
@@ -111,19 +118,25 @@ def rec(clauses, lit, sol):
 
 if __name__ == '__main__':
     # unused
-    # heuristic=sys.argv[1]
-    # input_file=sys.argv[2] #argument for read_game()
+    global h
+    h=1
+    #h=int(sys.argv[1]) #set heuristc choice
+    #input_file=sys.argv[2] #argument for read_game()
     #
 
-    sudoku = read_game()  # DIMACS format
-    sudoku = parse_game(sudoku)  # int
     rules = read_rules()  # DIMACS format
     rules = parse_rules(rules)  # int
-    #start_time = time.time()
+    set_dim(len(rules[0]))
+    sudoku = read_game()  #input file as arg later
+    sudoku = parse_game(sudoku)  # int
+
+    start_time = time.time()
+
     for field in sudoku:
         rules=simplify(rules,field)
-    first_lit=select_literal(rules)
+    first_lit=heuristics[h](rules)
     if not rec(rules, first_lit, sudoku):
-        print(rec(rules, -first_lit, sudoku))
+        rec(rules, -first_lit, sudoku)
 
-    #print("--- %s seconds ---" % (time.time() - start_time))
+    running_time=time.time() - start_time
+    print(running_time)
