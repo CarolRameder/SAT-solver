@@ -1,12 +1,12 @@
-import time
 import sys, getopt
 import numpy as np
 import copy
 import time
 import math
-
+sys.setrecursionlimit(10000)
 #sudokus = "4x4.txt"  # argument in line
-sudokus = "1000_sudokus.txt"
+sudokus = "16x16.txt"
+#sudokus = "1000_sudokus.txt"
 rules_d={
     4:"sudoku-rules-4x4.txt",
     9:"9x9_sudoku-rules.txt",
@@ -23,6 +23,7 @@ def select_literal(cnf):
         for literal in c:
             return literal
 
+#2,3 to be added
 heuristics={
     1:select_literal
 }
@@ -34,12 +35,33 @@ def read_game():
     f = open(sudokus, "r")
     game_rep = f.readline()
     set_dim(int(math.sqrt(len(game_rep)-1)))
-    game_final = ""
-    for i in range(len(game_rep) - 1):
-        if game_rep[i] != ".":
+    if DIM==16:
+        return read_game16(game_rep)
+    else:
+        game_final = ""
+        for i in range(len(game_rep) - 1):
+            if game_rep[i] != ".":
+                l = int(i / DIM) + 1
+                c = i % DIM + 1
+                game_final = game_final + str(l) + str(c) + game_rep[i] + " 0\n"
+        return game_final
+
+
+def read_game16(line):
+    game_final=""
+    for i in range(len(line) - 1):
+        if line[i] != ".":
             l = int(i / DIM) + 1
             c = i % DIM + 1
-            game_final = game_final + str(l) + str(c) + game_rep[i] + " 0\n"
+            if line[i] in ["A", "B", "C", "D", "E", "F", "G"]:
+                if line[i]=="G":
+                    val=16
+                else:
+                    val=int(line[i], 16)
+            else:
+                val=int(line[i])
+            char_rep=str(l*289+c*17+val)
+            game_final=game_final+char_rep+" 0\n"
     return game_final
 
 # hardcoded
@@ -105,6 +127,7 @@ def rec(clauses, lit, sol):
     if new_clauses == 0:
         return 0
     elif new_clauses == 1:
+        print("Sol found!")
         show(new_sol)
         return 1
 
