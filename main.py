@@ -3,12 +3,15 @@ import sys, getopt
 import numpy as np
 import copy
 import time
+import math
 
 #sudokus = "4x4.txt"  # argument in line
 sudokus = "1000_sudokus.txt"
-#rules = "sudoku-rules-4x4.txt"  # hardcode read
-rules= "9x9_sudoku-rules.txt"
-
+rules_d={
+    4:"sudoku-rules-4x4.txt",
+    9:"9x9_sudoku-rules.txt",
+    16:"sudoku-rules-16x16.txt"
+}
 
 def set_dim(val):
     global DIM
@@ -30,6 +33,7 @@ def read_game():
     #f = open(file, "r") received arg later
     f = open(sudokus, "r")
     game_rep = f.readline()
+    set_dim(int(math.sqrt(len(game_rep)-1)))
     game_final = ""
     for i in range(len(game_rep) - 1):
         if game_rep[i] != ".":
@@ -40,7 +44,7 @@ def read_game():
 
 # hardcoded
 def read_rules():
-    with open(rules, 'r') as f:
+    with open(rules_d[DIM], 'r') as f:
         delete = f.readline()
         rls = f.read()
     return rls
@@ -123,15 +127,12 @@ if __name__ == '__main__':
     #h=int(sys.argv[1]) #set heuristc choice
     #input_file=sys.argv[2] #argument for read_game()
     #
-
+    sudoku = read_game()  # input file as arg later
+    sudoku = parse_game(sudoku)  # int
     rules = read_rules()  # DIMACS format
     rules = parse_rules(rules)  # int
-    set_dim(len(rules[0]))
-    sudoku = read_game()  #input file as arg later
-    sudoku = parse_game(sudoku)  # int
 
     start_time = time.time()
-
     for field in sudoku:
         rules=simplify(rules,field)
     first_lit=heuristics[h](rules)
