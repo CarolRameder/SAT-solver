@@ -76,12 +76,43 @@ def DLIS(lst, key_max=True):
         else:
             return min_key
 
+# jeroslow wang one-sided
+def JWOS(lst):
+    literal_count = defaultdict(int)
+    print(literal_count)
+    for clause in lst:
+        for lit in clause:
+            literal_count[lit] += (2**-len(clause))
+    max_key = max(literal_count, key=literal_count.get) #returns value
+    return max_key
+
+# jeroslow wang two-sided
+def JWTS(lst):
+    literal_count = defaultdict(int)
+    for clause in lst:
+        for lit in clause:
+            literal_count[lit] += (2**-len(clause))
+    
+    abslist = [abs(x) for x in literal_count]
+    absdict = dict.fromkeys(abslist, 0)
+
+    for i in literal_count:
+        absdict[abs(i)] += literal_count[i]
+
+    max_key = max(absdict, key=absdict.get)
+
+    if literal_count[max_key] >= literal_count[-1*max_key]:
+        return max_key
+    else:
+        return -max_key
 
 #2,3 to be added
 heuristics={
     1:select_literal,
     2:DLIS,
-    3:DLCS
+    3:DLCS,
+    4:JWOS,
+    5:JWTS
 }
 
 # returns DIMACS representation of the given input - initial configuration
@@ -213,7 +244,6 @@ def rec(clauses, lit, sol):
         new_lit=unit_clause
     else:
         new_lit = heuristics[h](new_clauses)
-
     if rec(new_clauses, -new_lit, new_sol):
         return True
     return rec(new_clauses, new_lit, new_sol)
@@ -222,7 +252,7 @@ def rec(clauses, lit, sol):
 if __name__ == '__main__':
     # unused
     global h
-    h=2
+    h=5
     #h=int(sys.argv[1]) #set heuristc choice
     #input_file=sys.argv[2] #argument for read_game()
     #
