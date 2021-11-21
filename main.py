@@ -6,8 +6,8 @@ import math
 from collections import defaultdict
 sys.setrecursionlimit(10000)
 #sudokus = "4x4.txt"  # argument in line
-sudokus = "16x16.txt"
-#sudokus = "1000_sudokus.txt"
+#sudokus = "16x16.txt"
+sudokus = "1000_sudokus.txt"
 rules_d={
     4:"sudoku-rules-4x4.txt",
     9:"9x9_sudoku-rules.txt",
@@ -146,14 +146,34 @@ def parse_rules(arg):
     return list_rep
 
 def show(solution):
+    if len(solution)>1000:
+        show_16(solution)
+    else:
+        solved = np.zeros((DIM, DIM), dtype=int)
+        for num in solution:
+            if num>0:
+                lin = int(str(num)[0]) - 1
+                col = int(str(num)[1]) - 1
+                val = int(str(num)[2])
+                solved[lin][col] = val
+        print(solved)
+
+def show_16(solution):
     solved = np.zeros((DIM, DIM), dtype=int)
+    letters=["A", "B", "C", "D", "E", "F", "G"]
     for num in solution:
-        if num>0:
-            lin = int(str(num)[0]) - 1
-            col = int(str(num)[1]) - 1
-            val = int(str(num)[2])
+        if num > 0:
+            lin = int(num/289) - 1
+            col = int((num-289*lin)/17) - 1
+            val=num-289*lin-17*col
             solved[lin][col] = val
-    print(solved)
+    for i in range(DIM):
+        for j in range(DIM):
+            if solved[i][j]>9:
+                print(letters[solved[i][j]-10]+" ")
+            else:
+                print(solved[i][j]+" ")
+        print("\n")
 
 def simplify(clauses, lit):
     simplified=copy.deepcopy(clauses)
@@ -202,7 +222,7 @@ def rec(clauses, lit, sol):
 if __name__ == '__main__':
     # unused
     global h
-    h=3
+    h=2
     #h=int(sys.argv[1]) #set heuristc choice
     #input_file=sys.argv[2] #argument for read_game()
     #
