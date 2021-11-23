@@ -1,13 +1,13 @@
-import sys, getopt
+import sys
 import numpy as np
 import copy
 import time
 import math
 from collections import defaultdict
 sys.setrecursionlimit(10000)
-#sudokus = "4x4.txt"  # argument in line
+sudokus = "4x4.txt"  # argument in line
 #sudokus = "16x16.txt"
-sudokus = "1000_sudokus.txt"
+#sudokus = "1000_sudokus.txt"
 rules_d={
     4:"sudoku-rules-4x4.txt",
     9:"9x9_sudoku-rules.txt",
@@ -58,7 +58,7 @@ def DLIS(lst, key_max=True):
     max_key = max(pos_literal_count, key=pos_literal_count.get)
     min_key = max(neg_literal_count, key=neg_literal_count.get)
 
-    if key_max == True:
+    if key_max:
         if max_key in pos_literal_count and -max_key in neg_literal_count:
             if pos_literal_count[max_key] > neg_literal_count[-max_key]:
                 return max_key
@@ -117,10 +117,8 @@ heuristics={
 
 # returns DIMACS representation of the given input - initial configuration
 # file as argument on run
-def read_game():
-    #f = open(file, "r") received arg later
-    f = open(sudokus, "r")
-    game_rep = f.readline()
+def read_game(game_rep):
+
     set_dim(int(math.sqrt(len(game_rep)-1)))
     if DIM==16:
         return read_game16(game_rep)
@@ -228,6 +226,7 @@ def unit(clauses):
     return 0
 
 def rec(clauses, lit, sol):
+    global total_units, total_bkt
     new_sol = copy.deepcopy(sol)
     new_sol.append(lit)
     new_clauses = simplify(clauses, lit)
@@ -242,8 +241,10 @@ def rec(clauses, lit, sol):
     unit_clause=unit(new_clauses)
     if unit_clause!=0:
         new_lit=unit_clause
+        total_units+=1
     else:
         new_lit = heuristics[h](new_clauses)
+        total_bkt+=1
     if rec(new_clauses, -new_lit, new_sol):
         return True
     return rec(new_clauses, new_lit, new_sol)
@@ -251,22 +252,57 @@ def rec(clauses, lit, sol):
 
 if __name__ == '__main__':
     # unused
-    global h
+    global h,total_bkt,total_units
     h=5
     #h=int(sys.argv[1]) #set heuristc choice
     #input_file=sys.argv[2] #argument for read_game()
     #
-    sudoku = read_game()  # input file as arg later
-    sudoku = parse_game(sudoku)  # int
+    f = open(sudokus, "r")
+    game_reps = f.readlines()
+    set_dim(int(math.sqrt(len(game_reps[0]) - 1)))
     rules = read_rules()  # DIMACS format
     rules = parse_rules(rules)  # int
+    duration=[[],[]]
+    bkts = [[], []]
+    units = [[], []]
+    for game_rep in game_reps:
+        sudoku = read_game(game_rep)  # input file as arg later
+        sudoku = parse_game(sudoku)  # int
+        if DIM==9:#continue for others?
+            if 21<=len(sudoku)<=24:
+                gr=0
+            elif 26<=len(sudoku)<=29:
+                gr=1
+            else:
+                continue
+        elif DIM==4:
+            if len(sudoku)==4:
+                gr=0
+            elif len(sudoku)==6:
+                gr=1
+            else:
+                continue
+        print(sudoku)
+        start_time = time.time()
+        c_rules=copy.deepcopy(rules)
+        for field in sudoku:
+            c_rules=simplify(c_rules,field)
+        total_units=0
+        total_bkt=0
+        first_lit=heuristics[h](c_rules)
+        if not rec(c_rules, first_lit, sudoku):
+            rec(c_rules, -first_lit, sudoku)
 
-    start_time = time.time()
-    for field in sudoku:
-        rules=simplify(rules,field)
-    first_lit=heuristics[h](rules)
-    if not rec(rules, first_lit, sudoku):
-        rec(rules, -first_lit, sudoku)
-
-    running_time=time.time() - start_time
-    print(running_time)
+        running_time=time.time() - start_time
+        duration[gr].append(running_time)
+        bkts[gr].append(total_bkt)
+        units[gr].append(total_units)
+    print("Duration")
+    print(sum(duration[1])/len(duration[1]), np.std(duration[1]))
+    print(sum(duration[0]) / len(duration[0]), np.std(duration[0]))
+    print("Backtracks")
+    print(sum(bkts[1]) / len(bkts[1]), np.std(bkts[1]))
+    print(sum(bkts[0]) / len(bkts[0]), np.std(bkts[0]))
+    print("Unit rule calls")
+    print(sum(units[1]) / len(units[1]), np.std(units[1]))
+    print(sum(units[0]) / len(units[0]), np.std(units[0]))
