@@ -25,10 +25,9 @@ def select_literal(cnf):
             return literal
 
 def DLCS(lst):
-    clauses = copy.deepcopy(lst)
     literal_count = defaultdict(int)
     literal_count2 = defaultdict(int)
-    for clause in clauses:
+    for clause in lst:
         for number in clause:
             literal_count[abs(number)] += 1
             literal_count2[number] += 1
@@ -44,10 +43,9 @@ def DLCS(lst):
 
 # we can choose if we take the highest positive or negative value => can decide with True
 def DLIS(lst, key_max=True):
-    clauses = copy.deepcopy(lst)
     pos_literal_count = defaultdict(int)
     neg_literal_count = defaultdict(int)
-    for clause in clauses:
+    for clause in lst:
         for number in clause:
             if number > 0:
                 pos_literal_count[number] += 1
@@ -79,7 +77,7 @@ def DLIS(lst, key_max=True):
 # jeroslow wang one-sided
 def JWOS(lst):
     literal_count = defaultdict(int)
-    print(literal_count)
+    #rint(literal_count)
     for clause in lst:
         for lit in clause:
             literal_count[lit] += (2**-len(clause))
@@ -106,7 +104,7 @@ def JWTS(lst):
     else:
         return -max_key
 
-#2,3 to be added
+#1,2 and 4
 heuristics={
     1:select_literal,
     2:DLIS,
@@ -119,7 +117,6 @@ heuristics={
 # file as argument on run
 def read_game(game_rep):
 
-    set_dim(int(math.sqrt(len(game_rep)-1)))
     if DIM==16:
         return read_game16(game_rep)
     else:
@@ -253,7 +250,7 @@ def rec(clauses, lit, sol):
 if __name__ == '__main__':
     # unused
     global h,total_bkt,total_units
-    h=5
+    h=4
     #h=int(sys.argv[1]) #set heuristc choice
     #input_file=sys.argv[2] #argument for read_game()
     #
@@ -265,7 +262,7 @@ if __name__ == '__main__':
     duration=[[],[]]
     bkts = [[], []]
     units = [[], []]
-    for game_rep in game_reps:
+    for game_rep in game_reps[:20]:
         sudoku = read_game(game_rep)  # input file as arg later
         sudoku = parse_game(sudoku)  # int
         if DIM==9:#continue for others?
@@ -298,11 +295,17 @@ if __name__ == '__main__':
         bkts[gr].append(total_bkt)
         units[gr].append(total_units)
     print("Duration")
+    print("gr2")
     print(sum(duration[1])/len(duration[1]), np.std(duration[1]))
+    print("gr1")
     print(sum(duration[0]) / len(duration[0]), np.std(duration[0]))
     print("Backtracks")
+    print("gr2")
     print(sum(bkts[1]) / len(bkts[1]), np.std(bkts[1]))
+    print("gr1")
     print(sum(bkts[0]) / len(bkts[0]), np.std(bkts[0]))
     print("Unit rule calls")
+    print("gr2")
     print(sum(units[1]) / len(units[1]), np.std(units[1]))
+    print("gr1")
     print(sum(units[0]) / len(units[0]), np.std(units[0]))
