@@ -6,6 +6,7 @@ import matplotlib as plt
 from matplotlib import pyplot
 
 doc = "run1_results.txt"
+doc2 = "run2_results_4x4.txt"
 
 def read_file(doc):
     lst = []
@@ -33,7 +34,7 @@ def clear_up(lst):
         
 
 
-
+# 9x9
 
 test = read_file(doc)
 
@@ -62,6 +63,81 @@ dim_9_dlis = dim_9_dlis_group1 + dim_9_dlis_group2
 dim_9_jwos_group1 = clear_up(dim_9_jwos_group1)
 dim_9_jwos_group2 = clear_up(dim_9_jwos_group2)
 dim_9_jwos = dim_9_jwos_group1 + dim_9_jwos_group2
+
+# 4x4
+
+f2 = read_file(doc2)
+f2 = f2.split("]")
+
+
+dim_4_dpll_group1 = f2[0].split(",")
+dim_4_dpll_group2 = f2[1].split(",")
+dim_4_dpll_group1_bkt = f2[2].split(",")
+dim_4_dpll_group2_bkt = f2[3].split(",")
+dim_4_dpll_group1_unit = f2[4].split(",")
+dim_4_dpll_group2_unit = f2[5].split(",")
+
+dim_4_dpll_group1[0] = "0.08225584030151367"
+dim_4_dpll_group2[0] = "0.0512089729309082"
+dim_4_dpll_group1_bkt[0] = "0.0"
+dim_4_dpll_group2_bkt[0] = "0.0"
+dim_4_dpll_group1_unit[0] = "80.0"
+dim_4_dpll_group2_unit[0] = "57.0"
+
+dim_4_dpll_group1 = clear_up(dim_4_dpll_group1)
+dim_4_dpll_group2 = clear_up(dim_4_dpll_group2)
+dim_4_dpll_group1_bkt = clear_up(dim_4_dpll_group1_bkt)
+dim_4_dpll_group2_bkt = clear_up(dim_4_dpll_group2_bkt )
+dim_4_dpll_group1_unit = clear_up(dim_4_dpll_group1_unit)
+dim_4_dpll_group2_unit = clear_up(dim_4_dpll_group2_unit)
+
+#----------------------------
+
+
+dim_4_dlis_group1 = f2[6].split(",")
+dim_4_dlis_group2 = f2[7].split(",")
+dim_4_dlis_group1_bkt = f2[8].split(",")
+dim_4_dlis_group2_bkt = f2[9].split(",")
+dim_4_dlis_group1_unit = f2[10].split(",")
+dim_4_dlis_group2_unit = f2[11].split(",")
+
+dim_4_dlis_group1[0] = 0.12261080741882324
+dim_4_dlis_group2[0] = 0.11937141418457031
+dim_4_dlis_group1_bkt[0] = 0.0
+dim_4_dlis_group2_bkt[0] = 0.0
+dim_4_dlis_group1_unit[0] = 59.0
+dim_4_dlis_group2_unit[0] = 57.0
+
+dim_4_dlis_group1 = clear_up(dim_4_dlis_group1)
+dim_4_dlis_group2 = clear_up(dim_4_dlis_group2)
+dim_4_dlis_group1_bkt = clear_up(dim_4_dlis_group1_bkt)
+dim_4_dlis_group2_bkt = clear_up(dim_4_dlis_group2_bkt)
+dim_4_dlis_group1_unit = clear_up(dim_4_dlis_group1_unit)
+dim_4_dlis_group2_unit = clear_up(dim_4_dlis_group2_unit)
+
+#--------------------------------------
+
+dim_4_jwos_group1 = f2[6].split(",")
+dim_4_jwos_group2 = f2[7].split(",")
+dim_4_jwos_group1_bkt = f2[8].split(",")
+dim_4_jwos_group2_bkt = f2[9].split(",")
+dim_4_jwos_group1_unit = f2[10].split(",")
+dim_4_jwos_group2_unit = f2[11].split(",")
+
+dim_4_jwos_group1[0] = "0.12261080741882324"
+dim_4_jwos_group2[0] = "0.11937141418457031"
+dim_4_jwos_group1_bkt[0] = "0.0"
+dim_4_jwos_group2_bkt[0] = "0.0"
+dim_4_jwos_group1_unit[0] = "59.0"
+dim_4_jwos_group2_unit[0] = "57.0"
+
+dim_4_jwos_group1 = clear_up(dim_4_jwos_group1)
+dim_4_jwos_group2 = clear_up(dim_4_jwos_group2 )
+dim_4_jwos_group1_bkt = clear_up(dim_4_jwos_group1_bkt)
+dim_4_jwos_group2_bkt = clear_up(dim_4_jwos_group2_bkt)
+dim_4_jwos_group1_unit = clear_up(dim_4_jwos_group1_unit)
+dim_4_jwos_group2_unit = clear_up(dim_4_jwos_group2_unit)
+
 
 # -----------------------------------------------------------------------------------
 
