@@ -238,6 +238,8 @@ dim_4_jwos_group2_unit = clear_up(dim_4_jwos_group2_unit)
 
 # tests
 
+
+my_dict = {"aa": 1, "bb": 3}
 # Boxplots 
 ### three different graphs?
 ### for each algorithm both dimensions and both groups
@@ -248,10 +250,104 @@ plt.title("Box Plots")
 plt.pyplot.show()
 
 
+fig, ax = plt.pyplot.subplots()
+ax.boxplot([dim_9_dlis_group1_unit, dim_9_dlis_group2_unit])
+ax.set_xticklabels(["Group 1", "Group 2"])
+plt.pyplot.title("Unit-rule calls for the DLIS 9x9")
+plt.pyplot.show()
+
+fig, ax = plt.pyplot.subplots()
+ax.boxplot([dim_4_jwos_group1_bkt, dim_4_jwos_group2_bkt, dim_9_jwos_group1_bkt, dim_9_jwos_group2_bkt])
+ax.set_xticklabels(["Group 1 4x4", "Group 2 4x4", "Group 1 9x9", "Group 2 9x9"])
+plt.pyplot.title("JWOS")
+plt.pyplot.show()
+
+dur_mean_dpll = [np.mean(dim_4_dpll_group1+dim_4_dpll_group2), np.mean(dim_9_dpll_group1+dim_9_dpll_group2)]
+dur_mean_dlis = [np.mean(dim_4_dlis_group1+dim_4_dlis_group2), np.mean(dim_9_dlis_group1+dim_9_dlis_group2)]
+dur_mean_jwos = [np.mean(dim_4_jwos_group1+dim_4_jwos_group2), np.mean(dim_9_jwos_group1+dim_9_jwos_group2)]
+
+x_axis = ["4x4", "9x9"]
+
+plt.pyplot.plot(x_axis, dur_mean_dpll, color = "blue", label = "DPLL")
+plt.pyplot.scatter(x_axis, dur_mean_dpll, color = "blue")
+plt.pyplot.plot(x_axis, dur_mean_dlis, color = "red", label = "DLIS")
+plt.pyplot.scatter(x_axis, dur_mean_dlis, color = "red")
+plt.pyplot.plot(x_axis, dur_mean_jwos, color = "green", label = "JWOS")
+plt.pyplot.scatter(x_axis, dur_mean_jwos, color = "green")
+plt.pyplot.xlabel('Sudoku size')
+plt.pyplot.ylabel('Running time in seconds')
+plt.pyplot.legend()
+plt.pyplot.show()
+
+
+line1 = plt.plot(x_axis, dur_mean_dpll,'ko-',label='line1')
+line2 = plt.plot(x_axis, dur_mean_dlis,'ro-',label='line2') 
+line3 = plt.plot(x_axis, dur_mean_jwos,'mo-',label='line3')
+
 
 # ttests
 ### as many as possible and look at the results
 ### between each dimensions and each group?
 ### one time merge all algorithms and groups into dimensions/group 1 and two and run 3 big t-test
 
-scipy.stats.ttest_ind(dim_4_dlis_group1_unit, dim_4_dlis_group2_unit)
+
+# duration ----------------------
+
+## dpll
+
+print(scipy.stats.ttest_ind(dim_4_dpll_group1+dim_4_dpll_group2, dim_9_dpll_group1+dim_9_dpll_group2))
+print(scipy.stats.ttest_ind(dim_4_dpll_group1, dim_4_dpll_group2))
+print(scipy.stats.ttest_ind(dim_9_dpll_group1, dim_9_dpll_group2))
+
+## dlis
+
+print(scipy.stats.ttest_ind(dim_4_dlis_group1+dim_4_dlis_group2, dim_9_dlis_group1+dim_9_dlis_group2))
+print(scipy.stats.ttest_ind(dim_4_dlis_group1, dim_4_dlis_group2))
+print(scipy.stats.ttest_ind(dim_9_dlis_group1, dim_9_dlis_group2))
+
+## jwos
+
+print(scipy.stats.ttest_ind(dim_4_jwos_group1+dim_4_jwos_group2, dim_9_jwos_group1+dim_9_jwos_group2))
+print(scipy.stats.ttest_ind(dim_4_jwos_group1, dim_4_jwos_group2))
+print(scipy.stats.ttest_ind(dim_9_jwos_group1, dim_9_jwos_group2))
+
+
+# backtracks ----------------------
+
+## dpll
+
+print(scipy.stats.ttest_ind(dim_4_dpll_group1_bkt+dim_4_dpll_group2_bkt, dim_9_dpll_group1_bkt+dim_9_dpll_group2_bkt))
+print(scipy.stats.ttest_ind(dim_4_dpll_group1_bkt, dim_4_dpll_group2_bkt))
+print(scipy.stats.ttest_ind(dim_9_dpll_group1_bkt, dim_9_dpll_group2_bkt))
+
+## dlis
+
+print(scipy.stats.ttest_ind(dim_4_dlis_group1_bkt+dim_4_dlis_group2_bkt, dim_9_dlis_group1_bkt+dim_9_dlis_group2_bkt))
+print(scipy.stats.ttest_ind(dim_4_dlis_group1_bkt, dim_4_dlis_group2_bkt))
+print(scipy.stats.ttest_ind(dim_9_dlis_group1_bkt, dim_9_dlis_group2_bkt))
+
+## jwos
+
+print(scipy.stats.ttest_ind(dim_4_jwos_group1_bkt+dim_4_jwos_group2_bkt, dim_9_jwos_group1_bkt+dim_9_jwos_group2_bkt))
+print(scipy.stats.ttest_ind(dim_4_jwos_group1_bkt, dim_4_jwos_group2_bkt))
+print(scipy.stats.ttest_ind(dim_9_jwos_group1_bkt, dim_9_jwos_group2_bkt))
+
+# unit rule calls ----------------------
+
+## dpll
+
+print(scipy.stats.ttest_ind(dim_4_dpll_group1_unit+dim_4_dpll_group2_unit, dim_9_dpll_group1_unit+dim_9_dpll_group2_unit))
+print(scipy.stats.ttest_ind(dim_4_dpll_group1_unit, dim_4_dpll_group2_unit))
+print(scipy.stats.ttest_ind(dim_9_dpll_group1_unit, dim_9_dpll_group2_unit))
+
+## dlis
+
+print(scipy.stats.ttest_ind(dim_4_dlis_group1_unit+dim_4_dlis_group2_unit, dim_9_dlis_group1_unit+dim_9_dlis_group2_unit))
+print(scipy.stats.ttest_ind(dim_4_dlis_group1_unit, dim_4_dlis_group2_unit))
+print(scipy.stats.ttest_ind(dim_9_dlis_group1_unit, dim_9_dlis_group2_unit))
+
+## jwos
+
+print(scipy.stats.ttest_ind(dim_4_jwos_group1_unit+dim_4_jwos_group2_unit, dim_9_jwos_group1_unit+dim_9_jwos_group2_unit))
+print(scipy.stats.ttest_ind(dim_4_jwos_group1_unit, dim_4_jwos_group2_unit))
+print(scipy.stats.ttest_ind(dim_9_jwos_group1_unit, dim_9_jwos_group2_unit))
