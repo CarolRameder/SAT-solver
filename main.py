@@ -5,9 +5,9 @@ import time
 import math
 from collections import defaultdict
 sys.setrecursionlimit(10000)
-sudokus = "4x4.txt"  # argument in line
+#sudokus = "4x4.txt"  # argument in line
 #sudokus = "16x16.txt"
-#sudokus = "1000_sudokus.txt"
+sudokus = "1000_sudokus.txt"
 rules_d={
     4:"sudoku-rules-4x4.txt",
     9:"9x9_sudoku-rules.txt",
@@ -128,7 +128,6 @@ def read_game(game_rep):
                 game_final = game_final + str(l) + str(c) + game_rep[i] + " 0\n"
         return game_final
 
-
 def read_game16(line):
     game_final=""
     for i in range(len(line) - 1):
@@ -230,8 +229,7 @@ def rec(clauses, lit, sol):
     if new_clauses == 0:
         return 0
     elif new_clauses == 1:
-        print("Sol found!")
-        show(new_sol)
+        #show(new_sol)
         return 1
 
     #unit rule
@@ -250,9 +248,10 @@ def rec(clauses, lit, sol):
 if __name__ == '__main__':
     # unused
     global h,total_bkt,total_units
-    h=4
-    #h=int(sys.argv[1]) #set heuristc choice
-    #input_file=sys.argv[2] #argument for read_game()
+    #124
+    h=1
+    h=int(sys.argv[1]) #set heuristc choice
+    input_file=sys.argv[2] #argument for read_game()
     #
     f = open(sudokus, "r")
     game_reps = f.readlines()
@@ -262,7 +261,10 @@ if __name__ == '__main__':
     duration=[[],[]]
     bkts = [[], []]
     units = [[], []]
-    for game_rep in game_reps[:20]:
+    ord=0
+    for game_rep in game_reps:
+        ord+=1
+        print(ord)
         sudoku = read_game(game_rep)  # input file as arg later
         sudoku = parse_game(sudoku)  # int
         if DIM==9:#continue for others?
@@ -279,7 +281,6 @@ if __name__ == '__main__':
                 gr=1
             else:
                 continue
-        print(sudoku)
         start_time = time.time()
         c_rules=copy.deepcopy(rules)
         for field in sudoku:
@@ -294,18 +295,29 @@ if __name__ == '__main__':
         duration[gr].append(running_time)
         bkts[gr].append(total_bkt)
         units[gr].append(total_units)
+        if running_time>70:
+            print(sudoku)
     print("Duration")
-    print("gr2")
-    print(sum(duration[1])/len(duration[1]), np.std(duration[1]))
     print("gr1")
     print(sum(duration[0]) / len(duration[0]), np.std(duration[0]))
-    print("Backtracks")
     print("gr2")
-    print(sum(bkts[1]) / len(bkts[1]), np.std(bkts[1]))
+    print(sum(duration[1]) / len(duration[1]), np.std(duration[1]))
+    print("Backtracks")
     print("gr1")
     print(sum(bkts[0]) / len(bkts[0]), np.std(bkts[0]))
-    print("Unit rule calls")
     print("gr2")
-    print(sum(units[1]) / len(units[1]), np.std(units[1]))
+    print(sum(bkts[1]) / len(bkts[1]), np.std(bkts[1]))
+    print("Unit rule calls")
     print("gr1")
     print(sum(units[0]) / len(units[0]), np.std(units[0]))
+    print("gr2")
+    print(sum(units[1]) / len(units[1]), np.std(units[1]))
+    print("durations--------------------------------")
+    print(duration[0])
+    print(duration[1])
+    print("Backtracks-------------------------------")
+    print(bkts[0])
+    print(bkts[1])
+    print("Unit calls--------------------------------")
+    print(units[0])
+    print(units[1])
